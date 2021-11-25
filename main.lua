@@ -1,3 +1,4 @@
+love.event.quit()
 local nfs = require("nfs.nativefs")
 local lfs = love.filesystem
 local args = require("args")
@@ -136,13 +137,11 @@ end
 local meta = {
   padding = atlas.padding,
   extrude = atlas.extrude,
-  width = atlas.image:getWidth()
-  height = atlas.image:getHeight()
+  width = atlas.image:getWidth(),
+  height = atlas.image:getHeight(),
 }
 
 nfs.write(outputDir.."/quads."..extension, lustache:render(template, {
   quads = quads,
   meta = meta
 }))
-
-love.event.quit()
