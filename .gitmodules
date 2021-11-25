@@ -6,3 +6,7 @@
 	path = NFS
 	url = https://github.com/megagrump/nativefs
   update = merge #
+[submodule "lustache"]
+	path = lustache
+	url = https://github.com/Olivine-Labs/lustache
+  update = merge #
