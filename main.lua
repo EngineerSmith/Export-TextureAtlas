@@ -101,16 +101,15 @@ local defaultTemplate = [[
 local data = {
 {{#quads}}
   ["{{{id}}}"] = {
-    quad = {
-      x = {{x}},
-      y = {{y}},
-      w = {{w}},
-      h = {{h}},
-    },
+    x = {{x}},
+    y = {{y}},
+    w = {{w}},
+    h = {{h}},
   },
 {{/quads}}
   meta = {
     padding = {{meta.padding}},
+    extrude = {{meta.extrude}},
   }
 }
 return data
@@ -134,6 +133,7 @@ end
 
 local meta = {
   padding = atlas.padding,
+  extrude = atlas.extrude,
 }
 
 nfs.write(outputDir.."/quads."..extension, lustache:render(template, {

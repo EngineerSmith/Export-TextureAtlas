@@ -26,7 +26,7 @@ Required argument. Directory doesn't need to exist, once ran it will overwrite f
 ## -padding <num>
 Optional. Padding between images on the atlas, defaults to 1. Will throw a handled error if it cannot be converted to a number.
 
-**Note**, cannot be a negative otherwise it will be mistaken as an argument
+**Note**, cannot be a negative otherwise it will be mistaken as an argument. This value does not get added onto the exported quad, but does shift its location on the atlas.
 ### Example
 `love . <inputDir> <outputDir> -padding 1`
 
@@ -34,7 +34,7 @@ Optional. Padding between images on the atlas, defaults to 1. Will throw a handl
 ## -extrude <num>
 Optional. Extrudes the given image on the atlas, defaults to 0. Will throw a handled error if it cannot be converted to a number. It will use the [clamp warp mode](https://love2d.org/wiki/WrapMode).
 
-**Note**, cannot be a negative otherwise it will be mistaken as an argument
+**Note**, cannot be a negative otherwise it will be mistaken as an argument. This value does not get added onto the exported quad, but does shift its location on the atlas.
 ### Example
 `love . <inputDir> <outputDir> -extrude 1`
 
@@ -62,16 +62,15 @@ The default is as followed:
 local data = {
 {{#quads}}
   ["{{{id}}}"] = {
-    quad = {
-      x = {{x}},
-      y = {{y}},
-      w = {{w}},
-      h = {{h}},
-    },
+    x = {{x}},
+    y = {{y}},
+    w = {{w}},
+    h = {{h}},
   },
 {{/quads}}
   meta = {
     padding = {{meta.padding}},
+    extrude = {{meta.extrude}},
   }
 }
 return data
