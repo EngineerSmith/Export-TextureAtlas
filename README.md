@@ -6,9 +6,10 @@ Turns Runtime-TextureAtlas love library into a compile time tool
 ## inputDir
 Required argument. Directory must exist; containing all images to add to texture atlas
 
-**Note**, directory can end with `\` or `/` or ``
+**Note**, directory can end with `\` or `/` or neither
 ### Example
 `love . ./bin/in <outputDir>`
+
 `love . ./assets/images/ <outputDir>`
 ## outputDir
 Required argument. Directory doesn't need to exist, once ran it will overwrite files and (hopefully) output the files within as `atlas.png` and `quads.<template extension>`
@@ -16,20 +17,21 @@ Required argument. Directory doesn't need to exist, once ran it will overwrite f
 **Note**, directory can end with `\` or `/` or neither
 ### Example
 `love . <inputDir ./bin/out`
+
 `love . <inputDir> ./assets/textureAtlas/`
 ## -padding <num>
 Optional. Padding between images on the atlas, defaults to 1. Will throw a handled error if it cannot be converted to a number.
 
 **Note**, cannot be a negative otherwise it will be mistaken as an argument
-
-###Example
+### Example
 `love . <inputDir> <outputDir> -padding 1`
+
 `love . <inputDir> <outputDir> -padding 14`
 ## -fixedSize <w> [<h>]
 Optional. Uses a fixed size atlas from [Runtime-TextureAtlas](https://github.com/EngineerSmith/Runtime-TextureAtlas). All given images in a directory must be the same size. `h` is an optional value and will default to the required `w` value.
-
-###Example
+### Example
 `love . <inputDir> <outputDir> -fixedSize 16`
+
 `love . <inputDir> <outputDir> -fixedSize 16 32`
 ## -throwUnsupportedImageExtensions
 Optional. This argument will throw if it discovers an image within the input direcotry which isn't supported by love's `love.graphics.newImage` funciton.
@@ -38,8 +40,7 @@ Optional. This argument will throw if it discovers an image within the input dir
 ## -removeFileExtension
 Optional. This argument will remove image file extension for their given id. This could clash and overwrite other quads if you have the same image name with different extensions.
 `foo/bar.png` becomes `foo/bar`
-
-###Example
+### Example
 `love . <inputDir> <outputDir> -removeFileExtension`
 ## -template <filepath>
 Optional. This overrides the default internal templated. See [Lustache](https://github.com/Olivine-Labs/lustache) for how to create a template.
@@ -66,6 +67,7 @@ return data
 **Note**, the file extension of the template is used to sign the file. E.g. `template.lua` -> `quads.lua`, `template.json` -> `quads.json`
 ### Example
 `love . <inputDir> <outputDir> -template ./bin/in/template.lua`
+
 `love . <inputDir> <outputDir> -template ./assets/textureAtlas/template.json`
 # Libraries used
 * [Runtime-TextureAtlas](https://github.com/EngineerSmith/Runtime-TextureAtlas)
