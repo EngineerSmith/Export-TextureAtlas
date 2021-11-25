@@ -11,6 +11,8 @@ Required argument. Directory must exist; containing all images to add to texture
 `love . ./bin/in <outputDir>`
 
 `love . ./assets/images/ <outputDir>`
+
+`love . C:\user\Santa\game\assets\images\ <outputDir>`
 ## outputDir
 Required argument. Directory doesn't need to exist, once ran it will overwrite files and (hopefully) output the files within as `atlas.png` and `quads.<template extension>`
 
@@ -19,6 +21,8 @@ Required argument. Directory doesn't need to exist, once ran it will overwrite f
 `love . <inputDir ./bin/out`
 
 `love . <inputDir> ./assets/textureAtlas/`
+
+`love . <inputDir> C:\user\Santa\game\assets\textureAtlas\`
 ## -padding <num>
 Optional. Padding between images on the atlas, defaults to 1. Will throw a handled error if it cannot be converted to a number.
 
