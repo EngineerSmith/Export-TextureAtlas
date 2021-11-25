@@ -87,17 +87,42 @@ local fileData = imageData:encode("png") -- Could not use 2nd arg, probably due 
 local success, errorMessage = nfs.write(outputDir.."/atlas.png", fileData:getString())
 assert(success, "Unable to write atlas.png, Reason: "..tostring(errorMessage))
 
-local lustache = require("lustache.src.lustache")
+local lustache = require("lustache.lustache")
 local defaultTemplate = [[
 local data = {
 {{#quads}}
-  ["{{.}}"] = true,
+  ["{{{id}}}"] = {
+    quad = {
+      x = {{x}},
+      y = {{y}},
+      w = {{w}},
+      h = {{h}},
+    },
+  },
 {{/quads}}
+  meta = {
+    padding = {{meta.padding}},
+  }
 }
 return data
 ]]
 
-nfs.write(outputDir.."/quads.lua", lustache:render(defaultTemplate, atlas))
+local quads = {}
+for id, lovequad in pairs(atlas.quads) do
+  local quad = {}
+  quad.id = id
+  quad.x, quad.y, quad.w, quad.h = lovequad:getViewport()
+  table.insert(quads, quad)
+end
+
+local meta = {
+  padding = atlas.padding,
+}
+
+nfs.write(outputDir.."/quads.lua", lustache:render(defaultTemplate, {
+  quads = quads,
+  meta = meta
+}))
 
 love.draw = function()
   if atlas.image then
