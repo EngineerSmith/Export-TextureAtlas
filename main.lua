@@ -141,14 +141,4 @@ nfs.write(outputDir.."/quads."..extension, lustache:render(template, {
   meta = meta
 }))
 
-love.draw = function()
-  if atlas.image then
-    love.graphics.print(atlas.image:getWidth()..":"..atlas.image:getHeight())
---    local n = 30
---    for k, _ in pairs(atlas.quads) do
---      love.graphics.print(tostring(k), 10, n)
---      n = n + 20
---    end
-    love.graphics.draw(atlas.image, 0, 50)
-  end
-end
+love.event.quit()
