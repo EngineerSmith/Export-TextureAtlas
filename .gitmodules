@@ -2,3 +2,7 @@
 	path = RTA
 	url = https://github.com/EngineerSmith/Runtime-TextureAtlas
   update = merge #
+[submodule "NFS"]
+	path = NFS
+	url = https://github.com/zorggn/nativefs
+  update = merge #
