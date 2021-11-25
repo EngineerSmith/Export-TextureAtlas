@@ -32,7 +32,7 @@ Optional. Padding between images on the atlas, defaults to 1. Will throw a handl
 
 `love . <inputDir> <outputDir> -padding 12`
 ## -extrude <num>
-Optional. Extrudes the given image on the atlas, defaults to 0. Will throw a handled error if it cannot be converted to a number.
+Optional. Extrudes the given image on the atlas, defaults to 0. Will throw a handled error if it cannot be converted to a number. It will use the [clamp warp mode](https://love2d.org/wiki/WrapMode).
 
 **Note**, cannot be a negative otherwise it will be mistaken as an argument
 ### Example
