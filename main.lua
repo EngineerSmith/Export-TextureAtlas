@@ -113,6 +113,13 @@ local data = {
     extrude = {{meta.extrude}},
     atlasWidth = {{meta.width}},
     atlasHeight = {{meta.height}},
+    quadCount = {{meta.quadCount}},
+    {{#meta.fixedSize}}
+    fixedSize = {
+      width = {{width}},
+      height = {{height}},
+    },
+    {{/meta.fixedSize}}
   }
 }
 return data
@@ -139,7 +146,15 @@ local meta = {
   extrude = atlas.extrude,
   width = atlas.image:getWidth(),
   height = atlas.image:getHeight(),
+  quadCount = #quads,
 }
+
+if args.processed["-fixedSize"] then
+  meta.fixedSize = {
+    width = atlas.width,
+    height = atlas.height,
+  }
+end
 
 nfs.write(outputDir.."/quads."..extension, lustache:render(template, {
   quads = quads,

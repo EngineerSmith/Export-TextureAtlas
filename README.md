@@ -66,7 +66,7 @@ Optional. This argument will remove image file extension for their given id. Thi
 ## -template \<filepath>
 Optional. This overrides the default internal templated. See [Lustache](https://github.com/Olivine-Labs/lustache) for how to create a template.
 
-The default is as followed and contains all possible variables:
+The default is as followed, and contains all available variables:
 ```
 local data = {
 {{#quads}}
@@ -82,6 +82,13 @@ local data = {
     extrude = {{meta.extrude}},
     atlasWidth = {{meta.width}},
     atlasHeight = {{meta.height}},
+    quadCount = {{meta.quadCount}},
+    {{#meta.fixedSize}}
+    fixedSize = {
+      width = {{width}},
+      height = {{height}},
+    },
+    {{/meta.fixedSize}}
   }
 }
 return data
