@@ -1,6 +1,7 @@
-# Export-TextureAtlas
-About
+# Export-TextureAtlas (ETA)
 Extends the [Runtime-TextureAtlas library](https://github.com/EngineerSmith/Runtime-TextureAtlas) and allows it to be exported as file. This library does not cover code to handle an exported atlas, as the export can be customized through the template argument into different file type syntax.
+
+This tool can be fused similarly to any other love project. Follow these [instrutions](https://love2d.org/wiki/Game_Distribution) for your platform. Note, all arguments will work the same, but `love . <args>`/`love <ETA dir> <args>` will become `fused.exe <args>`, etc.
 ## Clone
 `git clone https://github.com/EngineerSmith/Export-TextureAtlas --recurse-submodules`
 ## Example use
