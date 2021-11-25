@@ -1,5 +1,5 @@
 # Export-TextureAtlas (ETA)
-Extends the [Runtime-TextureAtlas library](https://github.com/EngineerSmith/Runtime-TextureAtlas) and allows it to be exported as a file. This library does not cover code to handle an exported atlas, as the export can be customized through the template argument into different file type syntax and is not tied to Love2d. [Love2d](https://love2d.org/) is still required to use this tool.
+Extends the [Runtime-TextureAtlas library](https://github.com/EngineerSmith/Runtime-TextureAtlas) and allows it to be exported as a file. This tool requires [Love2d](https://love2d.org/) to work, but the resulting files are not tied to Love2D. Use a custom template to change the format of the quads file to how you want it. See `-template <filepath>` argument on how to create your own export template, or just use the default one provided.
 
 This tool can be fused similarly to any other love project. Follow these [instructions](https://love2d.org/wiki/Game_Distribution) for your platform. Note, all arguments will work the same, but `love . <args>`/`love <ETA dir> <args>` will become `fused.exe <args>`, etc.
 ## Clone
@@ -66,7 +66,7 @@ Optional. This argument will remove image file extension for their given id. Thi
 ## -template <filepath>
 Optional. This overrides the default internal templated. See [Lustache](https://github.com/Olivine-Labs/lustache) for how to create a template.
 
-The default is as followed:
+The default is as followed and contains all possible variables:
 ```
 local data = {
 {{#quads}}
