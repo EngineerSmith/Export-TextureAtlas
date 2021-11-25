@@ -14,7 +14,11 @@ end
 assert(nfs.createDirectory(outputDir), "Could not make outputDir")
 
 assert(nfs.mount(inputDir, "in", false), "Unable to mount inputDir: "..tostring(inputDir))
-assert(nfs.mount(outputDir, "out", false), "Unable to mount outputDir: "..tostring(outputDir))
+
+local lastChar = outputDir:sub(-1)
+if lastChar == "/" or lastChar == "\\" then
+  outputDir = outputDir:sub(1, #outputDir-1)
+end
 
 local padding = 0
 if args.processed["-padding"] then
@@ -76,7 +80,13 @@ iterateDirectory("in", "", function(location, localPath)
   atlas:add(loadImage(location), localPath)
 end)
 
-atlas:hardBake()
+local _, imageData = atlas:hardBake()
+assert(imageData, "Fatal error, atlas was baked before reaching this stage")
+
+local fileData = imageData:encode("png") -- Could not use 2nd arg, probably due to mounting via nfs than lfs
+local success, errorMessage = nfs.write(outputDir.."/atlas.png", fileData:getString())
+assert(success, "Unable to write atlas.png, Reason: "..tostring(errorMessage))
+
 
 love.draw = function()
   if atlas.image then
