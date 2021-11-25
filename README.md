@@ -32,7 +32,7 @@ Required argument. The directory doesn't need to exist, once ran it will overwri
 `love . <inputDir> ./assets/textureAtlas/`
 
 `love . <inputDir> C:\user\Santa\game\assets\textureAtlas\`
-## -padding <num>
+## -padding \<num>
 Optional. Padding between images on the atlas, defaults to 1. Will throw a handled error if it cannot be converted to a number.
 
 **Note**, it cannot be a negative, otherwise it will be mistaken as an argument. This value does not get added onto the exported quad, but does shift its location on the atlas.
@@ -40,7 +40,7 @@ Optional. Padding between images on the atlas, defaults to 1. Will throw a handl
 `love . <inputDir> <outputDir> -padding 1`
 
 `love . <inputDir> <outputDir> -padding 12`
-## -extrude <num>
+## -extrude \<num>
 Optional. Extrudes the given image on the atlas, defaults to 0. Will throw a handled error if it cannot be converted to a number. It will use the [clamp warp mode](https://love2d.org/wiki/WrapMode).
 
 **Note**, it cannot be a negative, otherwise it will be mistaken as an argument. This value does not get added onto the exported quad, but does shift its location on the atlas.
@@ -63,7 +63,7 @@ Optional. This argument will remove image file extension for their given id. Thi
 `foo/bar.png` becomes `foo/bar`
 ### Example
 `love . <inputDir> <outputDir> -removeFileExtension`
-## -template <filepath>
+## -template \<filepath>
 Optional. This overrides the default internal templated. See [Lustache](https://github.com/Olivine-Labs/lustache) for how to create a template.
 
 The default is as followed and contains all possible variables:
