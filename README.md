@@ -35,8 +35,8 @@ Optional. Extrudes the given image on the atlas, defaults to 0. Will throw a han
 `love . <inputDir> <outputDir> -extrude 1`
 
 `love . <inputDir> <outputDir> -extrude 16`
-## -fixedSize <w> [<h>]
-Optional. Uses a fixed size atlas from [Runtime-TextureAtlas](https://github.com/EngineerSmith/Runtime-TextureAtlas). All given images in a directory must be the same size. `h` is an optional value and will default to the required `w` value.
+## -fixedSize \<width> [\<height>]
+Optional. Uses a fixed size atlas from [Runtime-TextureAtlas](https://github.com/EngineerSmith/Runtime-TextureAtlas). All given images in a directory must be the same size. `height` is an optional value and will default to the required `width` value.
 ### Example
 `love . <inputDir> <outputDir> -fixedSize 16`
 
