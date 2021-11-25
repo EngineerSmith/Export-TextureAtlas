@@ -26,7 +26,15 @@ Optional. Padding between images on the atlas, defaults to 1. Will throw a handl
 ### Example
 `love . <inputDir> <outputDir> -padding 1`
 
-`love . <inputDir> <outputDir> -padding 14`
+`love . <inputDir> <outputDir> -padding 12`
+## -extrude <num>
+Optional. Extrudes the given image on the atlas, defaults to 0. Will throw a handled error if it cannot be converted to a number.
+
+**Note**, cannot be a negative otherwise it will be mistaken as an argument
+### Example
+`love . <inputDir> <outputDir> -extrude 1`
+
+`love . <inputDir> <outputDir> -extrude 16`
 ## -fixedSize <w> [<h>]
 Optional. Uses a fixed size atlas from [Runtime-TextureAtlas](https://github.com/EngineerSmith/Runtime-TextureAtlas). All given images in a directory must be the same size. `h` is an optional value and will default to the required `w` value.
 ### Example

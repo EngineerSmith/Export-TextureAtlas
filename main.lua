@@ -20,18 +20,24 @@ end
 local padding = 1
 if args.processed["-padding"] then
   padding = tonumber(args.processed["-padding"][1])
-  assert(padding ~= nil, "Given value to -padding <pad> could not be converted to a number. Gave: \""..tostring(args.processed["-padding"][1]).."\"")
+  assert(padding ~= nil, "Given value to -padding <num> could not be converted to a number. Gave: \""..tostring(args.processed["-padding"][1]).."\"")
+end
+
+local extrude = 0
+if args.processed["-extrude"] then
+  extrude = tonumber(args.processed["-extrude"][1])
+  assert(extrude ~= nil, "Given value to -extrude <num> could not be converted to a number. Gave:\""..tostring(args.processed["-extrude"][1]).."\"")
 end
 
 local atlas
 if args.processed["-fixedSize"] then
   assert(type(args.processed["-fixedSize"]) == "table", "Arg -fixedSize requires at least one dimension. If height isn't given, it will be the same as width. -fixedSize W <H>")
   atlas = require("RTA").newFixedSize(
-    args.processed["-fixedSize"][1], 
-    args.processed["-fixedSize"][2] or args.processed["-fixedSize"][1],
-    padding)
+    tonumber(args.processed["-fixedSize"][1]),
+    tonumber(args.processed["-fixedSize"][2]) or tonumber(args.processed["-fixedSize"][1]),
+    padding, extrude)
 else
-  atlas = require("RTA").newDynamicSize(padding)
+  atlas = require("RTA").newDynamicSize(padding, extrude)
 end
 
 local iterateDirectory 
