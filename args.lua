@@ -1,7 +1,7 @@
 local args = love.arg.parseGameArguments(arg)
 
 local processed, last = {}, nil
-if i=1, #args do
+for i=1, #args do
   local notFirstChar = args[i]:sub(1,1) ~= "-"
   if last and notFirstChar then
     if type(processed[last]) ~= "table" then
