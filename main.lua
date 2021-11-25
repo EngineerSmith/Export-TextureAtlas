@@ -87,6 +87,17 @@ local fileData = imageData:encode("png") -- Could not use 2nd arg, probably due 
 local success, errorMessage = nfs.write(outputDir.."/atlas.png", fileData:getString())
 assert(success, "Unable to write atlas.png, Reason: "..tostring(errorMessage))
 
+local lustache = require("lustache.src.lustache")
+local defaultTemplate = [[
+local data = {
+{{#quads}}
+  ["{{.}}"] = true,
+{{/quads}}
+}
+return data
+]]
+
+nfs.write(outputDir.."/quads.lua", lustache:render(defaultTemplate, atlas))
 
 love.draw = function()
   if atlas.image then
