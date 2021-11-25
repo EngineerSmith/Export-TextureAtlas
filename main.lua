@@ -8,9 +8,6 @@ assert(nfs.getInfo(inputDir, "directory"), "Given inputDir does not exist")
 
 local outputDir = args.processed[2]
 assert(outputDir, "Requires outputDir arg")
-if nfs.getInfo(outputDir, "directory") then
-  assert(nfs.remove(outputDir), "Could not remove outputDir")
-end
 assert(nfs.createDirectory(outputDir), "Could not make outputDir")
 
 assert(nfs.mount(inputDir, "in", false), "Unable to mount inputDir: "..tostring(inputDir))
@@ -20,7 +17,7 @@ if lastChar == "/" or lastChar == "\\" then
   outputDir = outputDir:sub(1, #outputDir-1)
 end
 
-local padding = 0
+local padding = 1
 if args.processed["-padding"] then
   padding = tonumber(args.processed["-padding"][1])
   assert(padding ~= nil, "Given value to -padding <pad> could not be converted to a number. Gave: \""..tostring(args.processed["-padding"][1]).."\"")
@@ -67,10 +64,10 @@ local getExtension = function(path) return path:match("^.+%.(.+)$") end
 local loadImage = function(location)
   local extension = getExtension(location)
   if not extension or not supportedExtensions[extension:lower()] then
-    if args.processed["-ignoreUnsupportedImageExtensions"] then
-      return
+    if args.processed["-throwUnsupportedImageExtensions"] then
+      error("Tried to load unsupported image extension: "..tostring(extension))
     end
-    assert(extension and supportedExtensions[extension:lower()], "Tried to load unsupported image extension: "..tostring(extension))
+    return
   end
   local success, result = pcall(love.graphics.newImage, location)
   assert(success, "Unable to load image: "..tostring(location)..", Reason:"..tostring(result))
