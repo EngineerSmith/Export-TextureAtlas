@@ -58,8 +58,10 @@ local supportedExtensions = {
   ["exr"] = true,
 }
 
+local getExtension = function(path) return path:match("^.+%.(.+)$") end
+
 local loadImage = function(location)
-  local extension = location:match("^.+%.(.+)$")
+  local extension = getExtension(location)
   assert(extension and supportedExtensions[extension:lower()], "Tried to load unsupported image extension: "..tostring(extension))
   local success, result = pcall(love.graphics.newImage, location)
   assert(success, "Unable to load image: "..tostring(location)..", Reason:"..tostring(result))
@@ -67,6 +69,10 @@ local loadImage = function(location)
 end
 
 iterateDirectory("in", "", function(location, localPath)
+  if args.processed["-removeFileExtension"] then
+    local extension = getExtension(location)
+    localPath = localPath:sub(1, (#localPath)-(#extension+1))
+  end
   atlas:add(loadImage(location), localPath)
 end)
 
@@ -75,6 +81,11 @@ atlas:hardBake()
 love.draw = function()
   if atlas.image then
     love.graphics.print(atlas.image:getWidth()..":"..atlas.image:getHeight())
+--    local n = 30
+--    for k, _ in pairs(atlas.quads) do
+--      love.graphics.print(tostring(k), 10, n)
+--      n = n + 20
+--    end
     love.graphics.draw(atlas.image, 0, 50)
   end
 end
