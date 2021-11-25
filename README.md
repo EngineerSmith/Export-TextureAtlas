@@ -66,34 +66,68 @@ Optional. This argument will remove image file extension for their given id. Thi
 ## -template \<filepath>
 Optional. This overrides the default internal templated. See [Lustache](https://github.com/Olivine-Labs/lustache) for how to create a template.
 
-The default is as followed, and contains all available variables:
+**Note**, the file extension of the template is used to sign the file. E.g. `template.lua` -> `quads.lua`, `template.json` -> `quads.json`
+
+The default(lua table) is as followed, and contains all available variables:
 ```
-local data = {
+return {
+  quads = {
 {{#quads}}
-  ["{{{id}}}"] = {
-    x = {{x}},
-    y = {{y}},
-    w = {{w}},
-    h = {{h}},
-  },
+    ["{{{id}}}"] = {
+      x = {{x}},
+      y = {{y}},
+      w = {{w}},
+      h = {{h}}
+    }{{^last}},{{/last}}
 {{/quads}}
+  },
   meta = {
     padding = {{meta.padding}},
     extrude = {{meta.extrude}},
     atlasWidth = {{meta.width}},
     atlasHeight = {{meta.height}},
-    quadCount = {{meta.quadCount}},
-    {{#meta.fixedSize}}
+    quadCount = {{meta.quadCount}}{{#meta.fixedSize}},
     fixedSize = {
       width = {{width}},
       height = {{height}},
-    },
-    {{/meta.fixedSize}}
+    }
+{{/meta.fixedSize}}
+{{^meta.fixedSize}}
+
+{{/meta.fixedSize}}
   }
 }
-return data
 ```
-**Note**, the file extension of the template is used to sign the file. E.g. `template.lua` -> `quads.lua`, `template.json` -> `quads.json`
+Formatted JSON example:
+```
+{
+  "quads": {
+{{#quads}}
+    "{{{id}}}": {
+      "x": {{x}},
+      "y": {{y}},
+      "w": {{w}},
+      "h": {{h}}
+    }{{^last}},{{/last}}
+{{/quads}}
+  },
+  "meta" = {
+    "padding": {{meta.padding}},
+    "extrude": {{meta.extrude}},
+    "atlasWidth": {{meta.width}},
+    "atlasHeight": {{meta.height}},
+    "quadCount": {{meta.quadCount}}{{#meta.fixedSize}},
+    "fixedSize": {
+      "width": {{width}},
+      "height": {{height}}
+    }
+{{/meta.fixedSize}}
+{{^meta.fixedSize}}
+
+{{/meta.fixedSize}}
+  }
+}
+```
 ### Example
 `love . <inputDir> <outputDir> -template ./bin/in/template.lua`
 

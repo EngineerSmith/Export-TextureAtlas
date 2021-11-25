@@ -99,30 +99,33 @@ assert(success, "Unable to write atlas.png, Reason: "..tostring(errorMessage))
 
 local lustache = require("lustache.lustache")
 local defaultTemplate = [[
-local data = {
+return {
+  quads = {
 {{#quads}}
-  ["{{{id}}}"] = {
-    x = {{x}},
-    y = {{y}},
-    w = {{w}},
-    h = {{h}},
-  },
+    ["{{{id}}}"] = {
+      x = {{x}},
+      y = {{y}},
+      w = {{w}},
+      h = {{h}}
+    }{{^last}},{{/last}}
 {{/quads}}
+  },
   meta = {
     padding = {{meta.padding}},
     extrude = {{meta.extrude}},
     atlasWidth = {{meta.width}},
     atlasHeight = {{meta.height}},
-    quadCount = {{meta.quadCount}},
-    {{#meta.fixedSize}}
+    quadCount = {{meta.quadCount}}{{#meta.fixedSize}},
     fixedSize = {
       width = {{width}},
       height = {{height}},
-    },
-    {{/meta.fixedSize}}
+    }
+{{/meta.fixedSize}}
+{{^meta.fixedSize}}
+
+{{/meta.fixedSize}}
   }
 }
-return data
 ]]
 
 local template, extension = defaultTemplate, "lua"
@@ -140,6 +143,7 @@ for id, lovequad in pairs(atlas.quads) do
   quad.x, quad.y, quad.w, quad.h = lovequad:getViewport()
   table.insert(quads, quad)
 end
+quads[#quads].last = true
 
 local meta = {
   padding = atlas.padding,
