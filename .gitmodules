@@ -1,0 +1,4 @@
+[submodule "RTA"]
+	path = RTA
+	url = https://github.com/EngineerSmith/Runtime-TextureAtlas
+  update = merge #
