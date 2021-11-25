@@ -1,5 +1,6 @@
 # Export-TextureAtlas
-This tool extends what the [Runtime-TextureAtlas](https://github.com/EngineerSmith/Runtime-TextureAtlas) love library does and allows it to be exported as file. This library does not cover code to handle an exported atlas, as the export can be customized through the template argument into different file type syntax.
+About
+Extends the [Runtime-TextureAtlas library](https://github.com/EngineerSmith/Runtime-TextureAtlas) and allows it to be exported as file. This library does not cover code to handle an exported atlas, as the export can be customized through the template argument into different file type syntax.
 ## Clone
 `git clone https://github.com/EngineerSmith/Export-TextureAtlas --recurse-submodules`
 ## Example use
@@ -78,6 +79,8 @@ local data = {
   meta = {
     padding = {{meta.padding}},
     extrude = {{meta.extrude}},
+    atlasWidth = {{meta.width}},
+    atlasHeight = {{meta.height}},
   }
 }
 return data

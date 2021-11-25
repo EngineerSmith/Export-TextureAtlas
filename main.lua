@@ -110,6 +110,8 @@ local data = {
   meta = {
     padding = {{meta.padding}},
     extrude = {{meta.extrude}},
+    atlasWidth = {{meta.width}},
+    atlasHeight = {{meta.height}},
   }
 }
 return data
@@ -134,6 +136,8 @@ end
 local meta = {
   padding = atlas.padding,
   extrude = atlas.extrude,
+  width = atlas.image:getWidth()
+  height = atlas.image:getHeight()
 }
 
 nfs.write(outputDir.."/quads."..extension, lustache:render(template, {
