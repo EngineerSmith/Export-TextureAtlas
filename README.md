@@ -1,6 +1,12 @@
 # Export-TextureAtlas
-Turns Runtime-TextureAtlas love library into a compile time tool
+This tool extends what the [Runtime-TextureAtlas](https://github.com/EngineerSmith/Runtime-TextureAtlas) love library does and allows it to be exported as file. This library does not cover code to handle an exported atlas, as the export can be customized through the template argument into different file type syntax.
 
+### Example use
+`love . ./bin/in/ ./bin/out/ -removeFileExtension -throwUnsupportedImageExtensions -extrude 1 -padding 1`
+
+`love . ./bin/in/ ./bin/out/ -removeFileExtension -extrude 1 -padding 1 -fixedSize 16 16 -template ./bin/template.lua`
+
+`love . ./bin/in/ ./bin/out/ -removeFileExtension -padding 2 -template ./bin/template.json`
 # Arguments
 `love . <inputDir> <outputDir> [<...>]`
 ## inputDir
