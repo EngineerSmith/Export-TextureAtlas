@@ -66,7 +66,12 @@ local getExtension = function(path) return path:match("^.+%.(.+)$") end
 
 local loadImage = function(location)
   local extension = getExtension(location)
-  assert(extension and supportedExtensions[extension:lower()], "Tried to load unsupported image extension: "..tostring(extension))
+  if not extension or not supportedExtensions[extension:lower()] then
+    if args.processed["-ignoreUnsupportedImageExtensions"] then
+      return
+    end
+    assert(extension and supportedExtensions[extension:lower()], "Tried to load unsupported image extension: "..tostring(extension))
+  end
   local success, result = pcall(love.graphics.newImage, location)
   assert(success, "Unable to load image: "..tostring(location)..", Reason:"..tostring(result))
   return result
@@ -77,7 +82,8 @@ iterateDirectory("in", "", function(location, localPath)
     local extension = getExtension(location)
     localPath = localPath:sub(1, (#localPath)-(#extension+1))
   end
-  atlas:add(loadImage(location), localPath)
+  local image = loadImage(location)
+  return image and atlas:add(image, localPath)
 end)
 
 local _, imageData = atlas:hardBake()
@@ -107,6 +113,14 @@ local data = {
 return data
 ]]
 
+local template, extension = defaultTemplate, "lua"
+if type(args.processed["-template"]) == "table" then
+  local contents, errorMessage = nfs.read(args.processed["-template"][1])
+  assert(contents, "Unable to read "..tostring(args.processed["-template"][1])..", Reason: "..tostring(errorMessage))
+  template = contents
+  extension = getExtension(args.processed["-template"][1])
+end
+
 local quads = {}
 for id, lovequad in pairs(atlas.quads) do
   local quad = {}
@@ -119,7 +133,7 @@ local meta = {
   padding = atlas.padding,
 }
 
-nfs.write(outputDir.."/quads.lua", lustache:render(defaultTemplate, {
+nfs.write(outputDir.."/quads."..extension, lustache:render(template, {
   quads = quads,
   meta = meta
 }))
