@@ -1,9 +1,9 @@
 love.conf = function(t)
-  t.modules.graphics = true
-  t.modules.window   = true
-  t.modules.image    = true
   t.modules.event    = true
-
+  t.modules.graphics = true
+  t.modules.image    = true
+  t.modules.window   = true
+  
   t.modules.audio    = false
   t.modules.data     = false
   t.modules.font     = false
@@ -18,4 +18,17 @@ love.conf = function(t)
   t.modules.timer    = false
   t.modules.touch    = false
   t.modules.video    = false
+end
+
+love.run = function()
+  return function()
+    if love.event then
+      love.event.pump()
+      for name, a,b,c,d,e,f in love.event.poll() do
+        if name == "quit" then
+          return a or 0
+        end
+      end
+    end
+  end
 end
