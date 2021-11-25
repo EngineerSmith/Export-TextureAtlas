@@ -1,7 +1,7 @@
 # Export-TextureAtlas (ETA)
-Extends the [Runtime-TextureAtlas library](https://github.com/EngineerSmith/Runtime-TextureAtlas) and allows it to be exported as file. This library does not cover code to handle an exported atlas, as the export can be customized through the template argument into different file type syntax and is not tired to Love2d. [Love2d](https://love2d.org/) is stil required to use this tool however.
+Extends the [Runtime-TextureAtlas library](https://github.com/EngineerSmith/Runtime-TextureAtlas) and allows it to be exported as a file. This library does not cover code to handle an exported atlas, as the export can be customized through the template argument into different file type syntax and is not tied to Love2d. [Love2d](https://love2d.org/) is still required to use this tool.
 
-This tool can be fused similarly to any other love project. Follow these [instrutions](https://love2d.org/wiki/Game_Distribution) for your platform. Note, all arguments will work the same, but `love . <args>`/`love <ETA dir> <args>` will become `fused.exe <args>`, etc.
+This tool can be fused similarly to any other love project. Follow these [instructions](https://love2d.org/wiki/Game_Distribution) for your platform. Note, all arguments will work the same, but `love . <args>`/`love <ETA dir> <args>` will become `fused.exe <args>`, etc.
 ## Clone
 `git clone https://github.com/EngineerSmith/Export-TextureAtlas --recurse-submodules`
 ## Example use
@@ -13,9 +13,9 @@ This tool can be fused similarly to any other love project. Follow these [instru
 # Arguments
 `love . <inputDir> <outputDir> [<...>]`
 ## inputDir
-Required argument. Directory must exist; containing all images to add to texture atlas
+Required argument. Directory must exist; containing all images to add to texture atlas.
 
-**Note**, directory can end with `\` or `/` or neither
+**Note**, directory can end with `\` or `/` or neither.
 ### Example
 `love . ./bin/in <outputDir>`
 
@@ -23,9 +23,9 @@ Required argument. Directory must exist; containing all images to add to texture
 
 `love . C:\user\Santa\game\assets\images\ <outputDir>`
 ## outputDir
-Required argument. Directory doesn't need to exist, once ran it will overwrite files and (hopefully) output the files within as `atlas.png` and `quads.<template extension>`
+Required argument. The directory doesn't need to exist, once ran it will overwrite files and (hopefully) output the files within as `atlas.png` and `quads.<template extension>`.
 
-**Note**, directory can end with `\` or `/` or neither
+**Note**, directory can end with `\` or `/` or neither.
 ### Example
 `love . <inputDir ./bin/out`
 
@@ -35,7 +35,7 @@ Required argument. Directory doesn't need to exist, once ran it will overwrite f
 ## -padding <num>
 Optional. Padding between images on the atlas, defaults to 1. Will throw a handled error if it cannot be converted to a number.
 
-**Note**, cannot be a negative otherwise it will be mistaken as an argument. This value does not get added onto the exported quad, but does shift its location on the atlas.
+**Note**, it cannot be a negative, otherwise it will be mistaken as an argument. This value does not get added onto the exported quad, but does shift its location on the atlas.
 ### Example
 `love . <inputDir> <outputDir> -padding 1`
 
@@ -43,7 +43,7 @@ Optional. Padding between images on the atlas, defaults to 1. Will throw a handl
 ## -extrude <num>
 Optional. Extrudes the given image on the atlas, defaults to 0. Will throw a handled error if it cannot be converted to a number. It will use the [clamp warp mode](https://love2d.org/wiki/WrapMode).
 
-**Note**, cannot be a negative otherwise it will be mistaken as an argument. This value does not get added onto the exported quad, but does shift its location on the atlas.
+**Note**, it cannot be a negative, otherwise it will be mistaken as an argument. This value does not get added onto the exported quad, but does shift its location on the atlas.
 ### Example
 `love . <inputDir> <outputDir> -extrude 1`
 
@@ -55,7 +55,7 @@ Optional. Uses a fixed size atlas from [Runtime-TextureAtlas](https://github.com
 
 `love . <inputDir> <outputDir> -fixedSize 16 32`
 ## -throwUnsupportedImageExtensions
-Optional. This argument will throw if it discovers an image within the input direcotry which isn't supported by love's `love.graphics.newImage` funciton.
+Optional. This argument will throw if it discovers an image within the input directory which isn't supported by love's `love.graphics.newImage` function.
 ### Example
 `love . <inputDir> <outputDir> -throwUnsupportedImageExtensions`
 ## -removeFileExtension
