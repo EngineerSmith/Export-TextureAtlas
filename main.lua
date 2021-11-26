@@ -41,6 +41,10 @@ else
   atlas = require("RTA").newDynamicSize(padding, extrude)
 end
 
+if args.processed["-pow2"] then
+  atlas:setBakeAsPow2(true)
+end
+
 local iterateDirectory 
 iterateDirectory = function(dir, path, callback)
   local items = lfs.getDirectoryItems(dir)

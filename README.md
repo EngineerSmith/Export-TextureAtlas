@@ -54,6 +54,10 @@ Optional. Uses a fixed size atlas from [Runtime-TextureAtlas](https://github.com
 `love . <inputDir> <outputDir> -fixedSize 16`
 
 `love . <inputDir> <outputDir> -fixedSize 16 32`
+## -pow2
+Optional. This argument will round the width and height of the atlas to the nearest power of 2 value. Note, the packing algorithms are not designed to pack to the nearest power of two, and so you may be left with additional empty space. PNG encoding used shouldn't add too much overhead to this from testing.
+### Example
+`love . <inputDir> <outputDir> -pow2`
 ## -throwUnsupportedImageExtensions
 Optional. This argument will throw if it discovers an image within the input directory which isn't supported by love's `love.graphics.newImage` function.
 ### Example
@@ -98,7 +102,7 @@ return {
   }
 }
 ```
-Formatted JSON example:
+Formatted JSON example that could be used:
 ```
 {
   "quads": {
