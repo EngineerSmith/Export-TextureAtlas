@@ -1,5 +1,5 @@
 love.event.quit()
-local nfs = require("nfs.nativefs")
+local nfs = require("NFS.nativefs")
 local lfs = love.filesystem
 local args = require("args")
 
