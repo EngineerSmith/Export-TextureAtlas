@@ -76,7 +76,7 @@ local processPaths = function(paths)
       info.fileName = getFileName(path:sub(info.subDirSearch and ((firstchar == "/" or firstchar == "\\") and 2 or 1) or 3))
       info.path = path:sub(info.subDirSearch and 1 or 3, #path):match("^(.+/)"..info.fileName.."."..info.extension.."$")
       if info.fileName == "*" and info.extension == "*" then
-        error("Cannot process two wildcards for both fileName and extension. Have you tried just doing: ./"..tostring(info.path))
+        error("Cannot process two wildcards for both fileName and extension. Have you tried just doing: [.]/"..tostring(info.path))
       elseif info.fileName == "*" then
         info.wildcard = "filename"
       elseif info.extension == "*" then
