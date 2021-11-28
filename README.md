@@ -66,10 +66,6 @@ Optional. Uses a fixed size atlas from [Runtime-TextureAtlas](https://github.com
 Optional. This argument will round the width and height of the atlas to the nearest power of 2 value. Note, the packing algorithms are not designed to pack to the nearest power of two, and so you may be left with additional empty space. PNG encoding used shouldn't add too much overhead to this from testing.
 ### Example
 `love . <inputDir> <outputDir> -pow2`
-## -throwUnsupportedImageExtensions
-Optional. This argument will throw if it discovers an image within the input directory which isn't supported by love's `love.graphics.newImage` function.
-### Example
-`love . <inputDir> <outputDir> -throwUnsupportedImageExtensions`
 ## -removeFileExtension
 Optional. This argument will remove image file extension for their given id. This could clash and overwrite other quads if you have the same image name with different extensions.
 `foo/bar.png` becomes `foo/bar`

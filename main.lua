@@ -81,9 +81,6 @@ local getExtension = function(path) return path:match("^.+%.(.+)$") end
 local loadImage = function(location)
   local extension = getExtension(location)
   if not extension or not supportedExtensions[extension:lower()] then
-    if args.processed["-throwUnsupportedImageExtensions"] then
-      error("Tried to load unsupported image extension: "..tostring(extension))
-    end
     return
   end
   local success, result = pcall(love.graphics.newImage, location)
