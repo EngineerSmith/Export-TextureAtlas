@@ -1,4 +1,9 @@
 love.conf = function(t)
+  t.window.width = 1
+  t.window.height = 1
+  t.window.x = -5
+  t.window.y = -5
+  
   t.modules.event    = true
   t.modules.graphics = true
   t.modules.image    = true
