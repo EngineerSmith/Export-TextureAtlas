@@ -48,6 +48,14 @@ Optional. Extrudes the given image on the atlas, defaults to 0. Will throw a han
 `love . <inputDir> <outputDir> -extrude 1`
 
 `love . <inputDir> <outputDir> -extrude 16`
+## -spacing \<num>
+Optional. Adds spacing between images on the atlas, does not add spacing between an image and the edge of the atlas.
+
+**Note**, it cannot be a negative, otherwise it will be mistaken as an argument. This value does not get added onto the exported quad, but does shift its location on the atlas.
+### Example
+`love . <inputDir> <outputDir> -spacing 1`
+
+`love . <inputDir> <outputDir> -spacing 5`
 ## -fixedSize \<width> [\<height>]
 Optional. Uses a fixed size atlas from [Runtime-TextureAtlas](https://github.com/EngineerSmith/Runtime-TextureAtlas). All given images in a directory must be the same size. `height` is an optional value and will default to the required `width` value.
 ### Example

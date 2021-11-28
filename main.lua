@@ -19,15 +19,21 @@ if lastChar == "/" or lastChar == "\\" then
 end
 
 local padding = 1
-if args.processed["-padding"] then
+if type(args.processed["-padding"]) == "table" then
   padding = tonumber(args.processed["-padding"][1])
   assert(padding ~= nil, "Given value to -padding <num> could not be converted to a number. Gave: \""..tostring(args.processed["-padding"][1]).."\"")
 end
 
 local extrude = 0
-if args.processed["-extrude"] then
+if type(args.processed["-extrude"]) == "table" then
   extrude = tonumber(args.processed["-extrude"][1])
   assert(extrude ~= nil, "Given value to -extrude <num> could not be converted to a number. Gave:\""..tostring(args.processed["-extrude"][1]).."\"")
+end
+
+local spacing = 0
+if type(args.processed["-spacing"]) == "table" then
+  spacing = tonumber(args.processed["-spacing"][1])
+  assert(spacing ~= nil, "Given value to -spacing <num> could not be converted to a number. Gave:\""..tostring(args.processed["-spacing"][1]).."\"")
 end
 
 local atlas
@@ -36,9 +42,9 @@ if args.processed["-fixedSize"] then
   atlas = require("RTA").newFixedSize(
     tonumber(args.processed["-fixedSize"][1]),
     tonumber(args.processed["-fixedSize"][2]) or tonumber(args.processed["-fixedSize"][1]),
-    padding, extrude)
+    padding, extrude, spacing)
 else
-  atlas = require("RTA").newDynamicSize(padding, extrude)
+  atlas = require("RTA").newDynamicSize(padding, extrude, spacing)
 end
 
 if args.processed["-pow2"] then
