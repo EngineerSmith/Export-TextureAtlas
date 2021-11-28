@@ -66,6 +66,14 @@ Optional. Uses a fixed size atlas from [Runtime-TextureAtlas](https://github.com
 Optional. This argument will round the width and height of the atlas to the nearest power of 2 value. Note, the packing algorithms are not designed to pack to the nearest power of two, and so you may be left with additional empty space. PNG encoding used shouldn't add too much overhead to this from testing.
 ### Example
 `love . <inputDir> <outputDir> -pow2`
+## -ignore \<directory or file path> \<...>
+Optional. Skip a directory or a file path from being added or searched through to the texture atlas. Can use wild cards.
+### Example
+`love . <inputDir> <outputDir> -ignore ./foo/`
+
+`love . <inputDir> <outputDir> -ignore *.png`
+
+`love . <inputDir> <outputDir> -ignore ./foo/ ./bar/ *.tga`
 ## -removeFileExtension
 Optional. This argument will remove image file extension for their given id. This could clash and overwrite other quads if you have the same image name with different extensions.
 `foo/bar.png` becomes `foo/bar`

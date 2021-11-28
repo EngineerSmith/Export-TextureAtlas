@@ -51,15 +51,93 @@ if args.processed["-pow2"] then
   atlas:setBakeAsPow2(true)
 end
 
+local getExtension = function(path) return path:match("^.+%.(.+)$") end
+local getFileName = function(path) return path:gsub("\\", "/"):match("([^/]+)%..+$") end
+
+local processPaths = function(paths)
+  for index, path in ipairs(paths) do
+    local firstchar, lastchar = path:sub(1,1), path:sub(-1)
+    local info = {
+      raw = path,
+      subDirSearch = firstchar ~= "."
+    }
+    info.type = (lastchar == "/" or lastchar == "\\") and "directory" or "file"
+    if info.type == "directory" then
+      local index = 1
+      if info.subDirSearch and (firstchar == "/" or firstchar == "\\") then
+        index = 2
+      elseif not info.subDirSearch then
+        index = 3
+      end
+      info.path = path:sub(index, #path-1)
+        -- "./dir/" -> "dir", "/foo/bar/" -> "foo/bar", "foo/bar/" -> "foo/bar"
+    else -- info.type == "file"
+      info.extension = getExtension(path)
+      info.fileName = getFileName(path:sub(info.subDirSearch and ((firstchar == "/" or firstchar == "\\") and 2 or 1) or 3))
+      info.path = path:sub(info.subDirSearch and 1 or 3, #path):match("^(.+/)"..info.fileName.."."..info.extension.."$")
+      if info.fileName == "*" and info.extension == "*" then
+        error("Cannot process two wildcards for both fileName and extension. Have you tried just doing: ./"..tostring(info.path))
+      elseif info.fileName == "*" then
+        info.wildcard = "filename"
+      elseif info.extension == "*" then
+        info.wildcard = "extension"
+      end
+    end
+    paths[index] = info
+  end
+end
+
+if type(args.processed["-ignore"]) == "table" then
+  processPaths(args.processed["-ignore"])
+end
+
+local checkDirectoryIgnore = function(path, directoryName)
+  if args.processed["-ignore"] then
+    for _, info in ipairs(args.processed["-ignore"]) do
+      if info.type == "directory" then
+        if info.subDirSearch then
+          if directoryName == info.path then
+            return false
+          end
+        elseif path == info.path then
+          return false
+        end
+      end
+    end
+  end
+  return true
+end
+
+local checkFileIgnore = function(path, fileName)
+  if args.processed["-ignore"] then
+    for _, info in ipairs(args.processed["-ignore"]) do
+      if info.type == "file" then
+        if info.wildcard == "extension" then
+          if getFileName(fileName) == info.fileName then
+            return false
+          end
+        elseif info.wildcard == "filename" then
+          if path == info.path and getExtension(fileName) == info.extension then
+            return false
+          end
+        elseif (path..fileName):match(info.path) then
+          return false
+        end
+      end
+    end
+  end
+  return true
+end
+
 local iterateDirectory 
 iterateDirectory = function(dir, path, callback)
   local items = lfs.getDirectoryItems(dir)
   for _, item in ipairs(items) do
     local loc = dir.."/"..item
     local infoType = lfs.getInfo(loc).type
-    if infoType  == "directory" then
+    if infoType  == "directory" and checkDirectoryIgnore(path..item, item) then
       iterateDirectory(loc, (path..item.."/"), callback)
-    elseif infoType == "file" then
+    elseif infoType == "file" and checkFileIgnore(path, item) then
       callback(loc, path..item)
     end
   end
@@ -75,8 +153,6 @@ local supportedExtensions = {
   ["pic"] = true,
   ["exr"] = true,
 }
-
-local getExtension = function(path) return path:match("^.+%.(.+)$") end
 
 local loadImage = function(location)
   local extension = getExtension(location)
@@ -94,8 +170,14 @@ iterateDirectory("in", "", function(location, localPath)
     localPath = localPath:sub(1, (#localPath)-(#extension+1))
   end
   local image = loadImage(location)
-  return image and atlas:add(image, localPath)
+  if image then
+    atlas:add(image, localPath)
+  end
 end)
+
+if atlas.imagesSize < 1 then
+  error("No images have been added to the atlas: "..tostring(atlas.imagesSize))
+end
 
 local _, imageData = atlas:hardBake()
 assert(imageData, "Fatal error, atlas was baked before reaching this stage")
