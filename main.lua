@@ -120,7 +120,7 @@ local checkFileIgnore = function(path, fileName)
           if path == info.path and getExtension(fileName) == info.extension then
             return false
           end
-        elseif (path..fileName):match(info.path) then
+        elseif (info.raw):match(info.path .. fileName) then
           return false
         end
       end
