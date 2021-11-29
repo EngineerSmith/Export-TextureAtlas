@@ -5,33 +5,44 @@ This tool can be fused similarly to any other love project. Follow these [instru
 ## Clone
 `git clone https://github.com/EngineerSmith/Export-TextureAtlas --recurse-submodules`
 ## Example use
-`love . ./bin/in/ ./bin/out/ -removeFileExtension -throwUnsupportedImageExtensions -extrude 1 -padding 1`
+`love . ./bin/in/ ./bin/out/ -removeFileExtension -extrude 1 -padding 1`
 
 `love . ./bin/in/ ./bin/out/ -removeFileExtension -extrude 1 -padding 1 -fixedSize 16 16 -template ./bin/template.lua`
 
 `love . ./bin/in/ ./bin/out/ -removeFileExtension -padding 2 -template ./bin/template.json`
+
+`love . -input ./bin/in/ ./bin/in2/ -output ./bin/out/atlases/ -padding 2 -template ./bin/template.json`
+Must be one or equal number of output directories. Directories must end in `/` or they will be mistaken as a file name.
+
+`love . -input ./bin/in/ ./bin/in2/ -output ./bin/out/atlas1.png ./bin/out/atlas2.png`
+You can define the name of the atlas, if you do equal number of directories to output. 
 # Arguments
 `love . <inputDir> <outputDir> [<...>]`
-## inputDir
-Required argument. Directory must exist; containing all images to add to texture atlas.
+## inputDir or -input \<dir or file path> \<...>
+Required argument. Directory must exist; containing all images to add to texture atlas. You can define more than one input directory with the `-input` flag, if the flag supplies an input `<inputDir>` is not required.
 
-**Note**, directory can end with `\` or `/` or neither.
+**Note**, directory must end with `\` or `/` or neither.
 ### Example
 `love . ./bin/in <outputDir>`
 
 `love . ./assets/images/ <outputDir>`
 
 `love . C:\user\Santa\game\assets\images\ <outputDir>`
-## outputDir
-Required argument. The directory doesn't need to exist, once ran it will overwrite files and (hopefully) output the files within as `atlas.png` and `quads.<template extension>`.
+## outputDir or -output \<dir or file path> \<...>
+Required argument. The directory doesn't need to exist, once ran it will overwrite files and (hopefully) output the files within as `atlas.png` and `data.<template extension>`. If the flag `-output` is supplied `<outputDir>` is not required. If the given path is to a file, then it will name the outputted texture atlas that file, whilst the data file will be called `data.<template extension>`, if mulitple input and output directories are given, it will then append a number to make it a unique file. E.g. `data1.lua`, `data2.lua`, `data3.png`. The same happens to atlas if only one output directory is defined, but `atlas` is appended in place of `data`. E.g. `atlas1.png`, `atlas2.png`, `atlas3.png`
 
-**Note**, directory can end with `\` or `/` or neither.
+**Note**, directory must end with `\` or `/` or it will be mistaken as a filepath and `.png` will be appended to it.
 ### Example
 `love . <inputDir ./bin/out`
 
 `love . <inputDir> ./assets/textureAtlas/`
 
 `love . <inputDir> C:\user\Santa\game\assets\textureAtlas\`
+
+`love . -input <dir1> <dir2> -output ./bin/out` -> `atlas1.png`+`data1.lua`, `atlas2.png`+`data2.lua`
+
+`love . -input <dir1> <dir2> <dir3> -output ./bin/out/imageA ./bin/out/imageB.png ./bin/out/imageC.banana` -> `imageA.png`+`data1.lua`, `imageB.png`+`data2.lua`, `imageC.banana`+`data3.lua`
+**Note**, that `imageA` excludes the extension, yet it is added on in the output. `image3.banana` will still be encoded as a `png` file.
 ## -padding \<num>
 Optional. Padding between images on the atlas, defaults to 1. Will throw a handled error if it cannot be converted to a number.
 

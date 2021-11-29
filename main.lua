@@ -3,19 +3,68 @@ local nfs = require("NFS.nativefs")
 local lfs = love.filesystem
 local args = require("args")
 
-local inputDir = args[1]
-assert(inputDir, "Requires inputDir arg")
-assert(nfs.getInfo(inputDir, "directory"), "Given inputDir does not exist")
+local getExtension = function(path) return path:match("^.+%.(.+)$") end
+local getFileName = function(path) return path:gsub("\\", "/"):match("([^/]+)%..+$") end
+local getFullFile = function(path) return path:gsub("\\", "/"):match("([^/]+)$") end
 
-local outputDir = args[2]
-assert(outputDir, "Requires outputDir arg")
-assert(nfs.createDirectory(outputDir), "Could not make outputDir")
+local inputDirs = { args[1] }
+if args[1] then
+  assert(nfs.getInfo(args[1], "directory"), "Given input directory does not exist: "..args[1])
+end
+if type(args["-input"]) == "table" then
+  for index, path in ipairs(args["-input"]) do
+    table.insert(inputDirs, path)
+    assert(nfs.getInfo(path, "directory"), "Given input directory at "..tostring(index).." does not exist: "..path)
+  end
+end
+assert(#inputDirs > 0, "Requires input directory paths either as the first parameter, or using the -input flag")
 
-assert(nfs.mount(inputDir, "in", false), "Unable to mount inputDir: "..tostring(inputDir))
+local outputDirs = {}
+if args[2] then
+  local path, info = args[2], {}
+  local lastChar = path:sub(-1)
+  if lastChar == "/" or lastChar == "\\" then
+    info.path = path:sub(1, #path-1)
+    info.type = "directory"
+    assert(nfs.createDirectory(path), "Could not make output directory at 2nd parameter: "..path)
+  else
+    info.path = path
+    local fileName, extension = getFileName(path) or getFullFile(path), getExtension(path)
+    info.addExtension = extension == nil
+    local chars = #fileName + (extension and #extension+1 or 0)
+    info.directory = path:sub(1, #path-chars)
+    info.type = "file"
+  end
+  outputDirs[1] = info
+end
+if type(args["-output"]) == "table" then
+  for index, path in ipairs(args["-output"]) do
+    local info = {}
+    local lastChar = path:sub(-1)
+    if lastChar == "/" or lastChar == "\\" then
+      info.path = path:sub(1, #path-1)
+      info.type = "directory"
+      assert(nfs.createDirectory(path), "Could not make output directory at "..index..": "..path)
+    else
+      info.path = path
+      local fileName, extension = getFileName(path) or getFullFile(path), getExtension(path)
+      info.addExtension = extension == nil
+      local chars = #fileName + (extension and #extension+1 or 0)
+      info.directory = path:sub(1, #path-chars)
+      info.type = "file"
+    end
+    table.insert(outputDirs, info)
+  end
+end
+assert(#outputDirs > 0, "Requires output directory paths as the second parameter, or using the -output flag")
 
-local lastChar = outputDir:sub(-1)
-if lastChar == "/" or lastChar == "\\" then
-  outputDir = outputDir:sub(1, #outputDir-1)
+if #outputDirs == 1 then
+  outputDirs = outputDirs[1]
+  if #inputDirs > 1 then
+    assert(outputDirs.type == "directory", "As there are multiple defined input directories, you cannot have a file path as the single output directory")
+  end
+else
+  assert(#outputDirs == #inputDirs, "Mismatched number of input and output directories given. Input: "..#inputDirs..", Output: "..#outputDirs)
 end
 
 local padding = 1
@@ -35,24 +84,6 @@ if type(args["-spacing"]) == "table" then
   spacing = tonumber(args["-spacing"][1])
   assert(spacing ~= nil, "Given value to -spacing <num> could not be converted to a number. Gave:\""..tostring(args["-spacing"][1]).."\"")
 end
-
-local atlas
-if args["-fixedSize"] then
-  assert(type(args["-fixedSize"]) == "table", "Arg -fixedSize requires at least one dimension. If height isn't given, it will be the same as width. -fixedSize W <H>")
-  atlas = require("RTA").newFixedSize(
-    tonumber(args["-fixedSize"][1]),
-    tonumber(args["-fixedSize"][2]) or tonumber(args["-fixedSize"][1]),
-    padding, extrude, spacing)
-else
-  atlas = require("RTA").newDynamicSize(padding, extrude, spacing)
-end
-
-if args["-pow2"] then
-  atlas:setBakeAsPow2(true)
-end
-
-local getExtension = function(path) return path:match("^.+%.(.+)$") end
-local getFileName = function(path) return path:gsub("\\", "/"):match("([^/]+)%..+$") end
 
 local processPaths = function(paths)
   for index, path in ipairs(paths) do
@@ -164,28 +195,6 @@ local loadImage = function(location)
   return result
 end
 
-iterateDirectory("in", "", function(location, localPath)
-  if args["-removeFileExtension"] then
-    local extension = getExtension(location)
-    localPath = localPath:sub(1, (#localPath)-(#extension+1))
-  end
-  local image = loadImage(location)
-  if image then
-    atlas:add(image, localPath)
-  end
-end)
-
-if atlas.imagesSize < 1 then
-  error("No images have been added to the atlas: "..tostring(atlas.imagesSize))
-end
-
-local _, imageData = atlas:hardBake()
-assert(imageData, "Fatal error, atlas was baked before reaching this stage")
-
-local fileData = imageData:encode("png") -- Could not use 2nd arg, probably due to mounting via nfs than lfs
-local success, errorMessage = nfs.write(outputDir.."/atlas.png", fileData:getString())
-assert(success, "Unable to write atlas.png, Reason: "..tostring(errorMessage))
-
 local lustache = require("lustache.lustache")
 local defaultTemplate = [[
 return {
@@ -225,31 +234,91 @@ if type(args["-template"]) == "table" then
   extension = getExtension(args["-template"][1])
 end
 
-local quads = {}
-for id, lovequad in pairs(atlas.quads) do
-  local quad = {}
-  quad.id = id
-  quad.x, quad.y, quad.w, quad.h = lovequad:getViewport()
-  table.insert(quads, quad)
-end
-quads[#quads].last = true
-
-local meta = {
-  padding = atlas.padding,
-  extrude = atlas.extrude,
-  width = atlas.image:getWidth(),
-  height = atlas.image:getHeight(),
-  quadCount = #quads,
-}
-
-if args["-fixedSize"] then
-  meta.fixedSize = {
-    width = atlas.width,
-    height = atlas.height,
+for inputIndex, inputDir in ipairs(inputDirs) do
+  assert(nfs.mount(inputDir, "in", false), "Unable to mount input directory: "..tostring(inputDir))
+  
+  local atlas
+  if args["-fixedSize"] then
+    assert(type(args["-fixedSize"]) == "table", "Arg -fixedSize requires at least one dimension. If height isn't given, it will be the same as width. -fixedSize W <H>")
+    atlas = require("RTA").newFixedSize(
+      tonumber(args["-fixedSize"][1]),
+      tonumber(args["-fixedSize"][2]) or tonumber(args["-fixedSize"][1]),
+      padding, extrude, spacing)
+  else
+    atlas = require("RTA").newDynamicSize(padding, extrude, spacing)
+  end
+  
+  if args["-pow2"] then
+    atlas:setBakeAsPow2(true)
+  end
+  
+  iterateDirectory("in", "", function(location, localPath)
+    if args["-removeFileExtension"] then
+      local extension = getExtension(location)
+      localPath = localPath:sub(1, (#localPath)-(#extension+1))
+    end
+    local image = loadImage(location)
+    if image then
+      atlas:add(image, localPath)
+    end
+  end)
+  
+  assert(nfs.unmount(inputDir), "Unable to unmount input directory: "..tostring(inputDir))
+  
+  if atlas.imagesSize < 1 then
+    error("No images have been added to the atlas: "..tostring(atlas.imagesSize))
+  end
+  
+  local _, imageData = atlas:hardBake()
+  assert(imageData, "Fatal error, atlas was baked before reaching this stage")
+  
+  local output = type(outputDirs) == "table" and outputDirs[inputIndex] or outputDirs
+  
+  local atlasPath
+  if output.type == "file" then
+    atlasPath = output.path..(type(output) ~= "table" and #inputDirs > 1 and tostring(inputIndex) or "")..(output.addExtension and ".png" or "")
+  else
+    atlasPath = output.path.."/atlas"..(#inputDirs > 1 and tostring(inputIndex) or "")..".png"
+  end
+  
+  local fileData = imageData:encode("png") -- Could not use 2nd arg, probably due to mounting via nfs than lfs
+  local success, errorMessage = nfs.write(atlasPath, fileData:getString())
+  assert(success, "Unable to write atlas.png, Reason: "..tostring(errorMessage))
+  
+  local quads = {}
+  for id, lovequad in pairs(atlas.quads) do
+    local quad = {}
+    quad.id = id
+    quad.x, quad.y, quad.w, quad.h = lovequad:getViewport()
+    table.insert(quads, quad)
+  end
+  quads[#quads].last = true
+  
+  local meta = {
+    padding = atlas.padding,
+    extrude = atlas.extrude,
+    width = atlas.image:getWidth(),
+    height = atlas.image:getHeight(),
+    quadCount = #quads,
   }
+  
+  if args["-fixedSize"] then
+    meta.fixedSize = {
+      width = atlas.width,
+      height = atlas.height,
+    }
+  end
+  
+  local dataPath 
+  if output.type == "file" then
+    dataPath = output.directory.."data"..(#inputDirs > 1 and tostring(inputIndex) or "").."."..extension
+  else
+    dataPath = output.path.."/data"..(#inputDirs > 1 and tostring(inputIndex) or "").."."..extension
+  end
+  
+  local success, errorMessage = nfs.write(dataPath, lustache:render(template, {
+    quads = quads,
+    meta = meta,
+  }))
+  assert(success, "Could not write data file out: "..tostring(errorMessage))
 end
-
-nfs.write(outputDir.."/quads."..extension, lustache:render(template, {
-  quads = quads,
-  meta = meta
-}))
