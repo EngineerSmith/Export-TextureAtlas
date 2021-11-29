@@ -3,11 +3,11 @@ local nfs = require("NFS.nativefs")
 local lfs = love.filesystem
 local args = require("args")
 
-local inputDir = args.processed[1]
+local inputDir = args[1]
 assert(inputDir, "Requires inputDir arg")
 assert(nfs.getInfo(inputDir, "directory"), "Given inputDir does not exist")
 
-local outputDir = args.processed[2]
+local outputDir = args[2]
 assert(outputDir, "Requires outputDir arg")
 assert(nfs.createDirectory(outputDir), "Could not make outputDir")
 
@@ -19,35 +19,35 @@ if lastChar == "/" or lastChar == "\\" then
 end
 
 local padding = 1
-if type(args.processed["-padding"]) == "table" then
-  padding = tonumber(args.processed["-padding"][1])
-  assert(padding ~= nil, "Given value to -padding <num> could not be converted to a number. Gave: \""..tostring(args.processed["-padding"][1]).."\"")
+if type(args["-padding"]) == "table" then
+  padding = tonumber(args["-padding"][1])
+  assert(padding ~= nil, "Given value to -padding <num> could not be converted to a number. Gave: \""..tostring(args["-padding"][1]).."\"")
 end
 
 local extrude = 0
-if type(args.processed["-extrude"]) == "table" then
-  extrude = tonumber(args.processed["-extrude"][1])
-  assert(extrude ~= nil, "Given value to -extrude <num> could not be converted to a number. Gave:\""..tostring(args.processed["-extrude"][1]).."\"")
+if type(args["-extrude"]) == "table" then
+  extrude = tonumber(args["-extrude"][1])
+  assert(extrude ~= nil, "Given value to -extrude <num> could not be converted to a number. Gave:\""..tostring(args["-extrude"][1]).."\"")
 end
 
 local spacing = 0
-if type(args.processed["-spacing"]) == "table" then
-  spacing = tonumber(args.processed["-spacing"][1])
-  assert(spacing ~= nil, "Given value to -spacing <num> could not be converted to a number. Gave:\""..tostring(args.processed["-spacing"][1]).."\"")
+if type(args["-spacing"]) == "table" then
+  spacing = tonumber(args["-spacing"][1])
+  assert(spacing ~= nil, "Given value to -spacing <num> could not be converted to a number. Gave:\""..tostring(args["-spacing"][1]).."\"")
 end
 
 local atlas
-if args.processed["-fixedSize"] then
-  assert(type(args.processed["-fixedSize"]) == "table", "Arg -fixedSize requires at least one dimension. If height isn't given, it will be the same as width. -fixedSize W <H>")
+if args["-fixedSize"] then
+  assert(type(args["-fixedSize"]) == "table", "Arg -fixedSize requires at least one dimension. If height isn't given, it will be the same as width. -fixedSize W <H>")
   atlas = require("RTA").newFixedSize(
-    tonumber(args.processed["-fixedSize"][1]),
-    tonumber(args.processed["-fixedSize"][2]) or tonumber(args.processed["-fixedSize"][1]),
+    tonumber(args["-fixedSize"][1]),
+    tonumber(args["-fixedSize"][2]) or tonumber(args["-fixedSize"][1]),
     padding, extrude, spacing)
 else
   atlas = require("RTA").newDynamicSize(padding, extrude, spacing)
 end
 
-if args.processed["-pow2"] then
+if args["-pow2"] then
   atlas:setBakeAsPow2(true)
 end
 
@@ -87,13 +87,13 @@ local processPaths = function(paths)
   end
 end
 
-if type(args.processed["-ignore"]) == "table" then
-  processPaths(args.processed["-ignore"])
+if type(args["-ignore"]) == "table" then
+  processPaths(args["-ignore"])
 end
 
 local checkDirectoryIgnore = function(path, directoryName)
-  if args.processed["-ignore"] then
-    for _, info in ipairs(args.processed["-ignore"]) do
+  if args["-ignore"] then
+    for _, info in ipairs(args["-ignore"]) do
       if info.type == "directory" then
         if info.subDirSearch then
           if directoryName == info.path then
@@ -109,8 +109,8 @@ local checkDirectoryIgnore = function(path, directoryName)
 end
 
 local checkFileIgnore = function(path, fileName)
-  if args.processed["-ignore"] then
-    for _, info in ipairs(args.processed["-ignore"]) do
+  if args["-ignore"] then
+    for _, info in ipairs(args["-ignore"]) do
       if info.type == "file" then
         if info.wildcard == "extension" then
           if getFileName(fileName) == info.fileName then
@@ -165,7 +165,7 @@ local loadImage = function(location)
 end
 
 iterateDirectory("in", "", function(location, localPath)
-  if args.processed["-removeFileExtension"] then
+  if args["-removeFileExtension"] then
     local extension = getExtension(location)
     localPath = localPath:sub(1, (#localPath)-(#extension+1))
   end
@@ -218,11 +218,11 @@ return {
 ]]
 
 local template, extension = defaultTemplate, "lua"
-if type(args.processed["-template"]) == "table" then
-  local contents, errorMessage = nfs.read(args.processed["-template"][1])
-  assert(contents, "Unable to read "..tostring(args.processed["-template"][1])..", Reason: "..tostring(errorMessage))
+if type(args["-template"]) == "table" then
+  local contents, errorMessage = nfs.read(args["-template"][1])
+  assert(contents, "Unable to read "..tostring(args["-template"][1])..", Reason: "..tostring(errorMessage))
   template = contents
-  extension = getExtension(args.processed["-template"][1])
+  extension = getExtension(args["-template"][1])
 end
 
 local quads = {}
@@ -242,7 +242,7 @@ local meta = {
   quadCount = #quads,
 }
 
-if args.processed["-fixedSize"] then
+if args["-fixedSize"] then
   meta.fixedSize = {
     width = atlas.width,
     height = atlas.height,
