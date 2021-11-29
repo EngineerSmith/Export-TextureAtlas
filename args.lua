@@ -12,7 +12,7 @@ for i=1, #args do
   elseif notFirstChar then
     processed[#processed+1] = args[i]
   else
-    processed[args[i]] = true
+    processed[args[i]] = processed[args[i]] or true
     last = args[i]
   end
 end
