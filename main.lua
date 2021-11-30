@@ -22,17 +22,20 @@ assert(#inputDirs > 0, "Requires input directory paths either as the first param
 local outputDirs = {}
 if args[2] then
   local path, info = args[2], {}
-  local lastChar = path:sub(-1)
-  if lastChar == "/" or lastChar == "\\" then
-    info.path = path:sub(1, #path-1)
+  local lastChar, extension = path:sub(-1), getExtension(path)
+  if not extension then
+    if lastChar == "/" or lastChar == "\\" then
+      path = path:sub(1, #path-1)
+    end
+    info.path = path
     info.type = "directory"
     assert(nfs.createDirectory(path), "Could not make output directory at 2nd parameter: "..path)
   else
     info.path = path
-    local fileName, extension = getFileName(path) or getFullFile(path), getExtension(path)
+    local fileName = getFileName(path) or getFullFile(path)
     info.addExtension = extension == nil
     local chars = #fileName + (extension and #extension+1 or 0)
-    info.directory = path:sub(1, #path-chars)
+    info.directory = path:sub(1, #path-chars-1)
     info.type = "file"
   end
   outputDirs[1] = info
@@ -40,17 +43,20 @@ end
 if type(args["-output"]) == "table" then
   for index, path in ipairs(args["-output"]) do
     local info = {}
-    local lastChar = path:sub(-1)
-    if lastChar == "/" or lastChar == "\\" then
-      info.path = path:sub(1, #path-1)
+    local lastChar, extension = path:sub(-1), getExtension(path)
+    if not extension then
+      if lastChar == "/" or lastChar == "\\" then
+        path = path:sub(1, #path-1)
+      end
+      info.path = path
       info.type = "directory"
-      assert(nfs.createDirectory(path), "Could not make output directory at "..index..": "..path)
+      assert(nfs.createDirectory(path), "Could not make output directory at 2nd parameter: "..path)
     else
       info.path = path
-      local fileName, extension = getFileName(path) or getFullFile(path), getExtension(path)
+      local fileName = getFileName(path) or getFullFile(path)
       info.addExtension = extension == nil
       local chars = #fileName + (extension and #extension+1 or 0)
-      info.directory = path:sub(1, #path-chars)
+      info.directory = path:sub(1, #path-chars-1)
       info.type = "file"
     end
     table.insert(outputDirs, info)
@@ -276,7 +282,7 @@ for inputIndex, inputDir in ipairs(inputDirs) do
   
   local atlasPath
   if output.type == "file" then
-    atlasPath = output.path..(type(output) ~= "table" and #inputDirs > 1 and tostring(inputIndex) or "")..(output.addExtension and ".png" or "")
+    atlasPath = output.path..(output.addExtension and ".png" or "")
   else
     atlasPath = output.path.."/atlas"..(#inputDirs > 1 and tostring(inputIndex) or "")..".png"
   end
@@ -309,12 +315,11 @@ for inputIndex, inputDir in ipairs(inputDirs) do
     }
   end
   
-  local dataPath 
+  local dataPath = output.path
   if output.type == "file" then
-    dataPath = output.directory.."data"..(#inputDirs > 1 and tostring(inputIndex) or "").."."..extension
-  else
-    dataPath = output.path.."/data"..(#inputDirs > 1 and tostring(inputIndex) or "").."."..extension
+    dataPath = output.directory
   end
+  dataPath = dataPath.."/data"..(#inputDirs > 1 and tostring(inputIndex) or "").."."..extension
   
   local success, errorMessage = nfs.write(dataPath, lustache:render(template, {
     quads = quads,

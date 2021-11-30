@@ -31,7 +31,7 @@ Required argument. Directory must exist; containing all images to add to texture
 ## outputDir or -output \<dir or file path> \<...>
 Required argument. The directory doesn't need to exist, once ran it will overwrite files and (hopefully) output the files within as `atlas.png` and `data.<template extension>`. If the flag `-output` is supplied `<outputDir>` is not required. If the given path is to a file, then it will name the outputted texture atlas that file, whilst the data file will be called `data.<template extension>`, if mulitple input and output directories are given, it will then append a number to make it a unique file. E.g. `data1.lua`, `data2.lua`, `data3.png`. The same happens to atlas if only one output directory is defined, but `atlas` is appended in place of `data`. E.g. `atlas1.png`, `atlas2.png`, `atlas3.png`
 
-**Note**, directory must end with `\` or `/` or it will be mistaken as a filepath and `.png` will be appended to it.
+**Note**, file must end with an extension or it will be treated as a directory.
 ### Example
 `love . <inputDir ./bin/out`
 
@@ -41,8 +41,8 @@ Required argument. The directory doesn't need to exist, once ran it will overwri
 
 `love . -input <dir1> <dir2> -output ./bin/out` -> `atlas1.png`+`data1.lua`, `atlas2.png`+`data2.lua`
 
-`love . -input <dir1> <dir2> <dir3> -output ./bin/out/imageA ./bin/out/imageB.png ./bin/out/imageC.banana` -> `imageA.png`+`data1.lua`, `imageB.png`+`data2.lua`, `imageC.banana`+`data3.lua`
-**Note**, that `imageA` excludes the extension, yet it is added on in the output. `image3.banana` will still be encoded as a `png` file.
+`love . -input <dir1> <dir2> <dir3> -output ./bin/out/imageA ./bin/out/imageB.png ./bin/out/imageC.banana` -> `imageA/atlas1.png`+`imageA/data1.lua`, `imageB.png`+`data2.lua`, `imageC.banana`+`data3.lua`
+**Note**, that `image3.banana` will be encoded as a `png` file.
 ## -padding \<num>
 Optional. Padding between images on the atlas, defaults to 1. Will throw a handled error if it cannot be converted to a number.
 
