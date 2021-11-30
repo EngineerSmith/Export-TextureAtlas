@@ -21,43 +21,37 @@ assert(#inputDirs > 0, "Requires input directory paths either as the first param
 
 local outputDirs = {}
 if args[2] then
-  local path, info = args[2], {}
+  local path, info = args[2], { path=args[2] }
   local lastChar, extension = path:sub(-1), getExtension(path)
   if not extension then
-    if lastChar == "/" or lastChar == "\\" then
-      path = path:sub(1, #path-1)
-    end
-    info.path = path
     info.type = "directory"
+    if lastChar == "/" or lastChar == "\\" then
+      info.path = path:sub(1, #path-1)
+    end
     assert(nfs.createDirectory(path), "Could not make output directory at 2nd parameter: "..path)
   else
-    info.path = path
+    info.type = "file"
     local fileName = getFileName(path) or getFullFile(path)
-    info.addExtension = extension == nil
     local chars = #fileName + (extension and #extension+1 or 0)
     info.directory = path:sub(1, #path-chars-1)
-    info.type = "file"
   end
   outputDirs[1] = info
 end
 if type(args["-output"]) == "table" then
   for index, path in ipairs(args["-output"]) do
-    local info = {}
+    local info = { path=path }
     local lastChar, extension = path:sub(-1), getExtension(path)
     if not extension then
-      if lastChar == "/" or lastChar == "\\" then
-        path = path:sub(1, #path-1)
-      end
-      info.path = path
       info.type = "directory"
+      if lastChar == "/" or lastChar == "\\" then
+        info.path = path:sub(1, #path-1)
+      end
       assert(nfs.createDirectory(path), "Could not make output directory at 2nd parameter: "..path)
     else
-      info.path = path
+      info.type = "file"
       local fileName = getFileName(path) or getFullFile(path)
-      info.addExtension = extension == nil
       local chars = #fileName + (extension and #extension+1 or 0)
       info.directory = path:sub(1, #path-chars-1)
-      info.type = "file"
     end
     table.insert(outputDirs, info)
   end
@@ -70,7 +64,41 @@ if #outputDirs == 1 then
     assert(outputDirs.type == "directory", "As there are multiple defined input directories, you cannot have a file path as the single output directory")
   end
 else
-  assert(#outputDirs == #inputDirs, "Mismatched number of input and output directories given. Input: "..#inputDirs..", Output: "..#outputDirs)
+  assert(#outputDirs == #inputDirs, "Mismatched number of input and output directories given: "..#inputDirs.." Inputs, "..#outputDirs.." Outputs")
+end
+
+local outputDataDirs = {}
+if type(args["-dataOutput"]) == "table" then
+  for index, path in ipairs(args["-dataOutput"]) do
+    local info = {path = path}
+    local lastChar, extension = path:sub(-1), getExtension(path)
+    if not extension then
+      info.type = "directory"
+      if lastChar == "/" or lastChar == "\\" then
+        info.path = path:sub(1, #path-1)
+      end
+      assert(nfs.createDirectory(path), "Could not make output directory at 2nd parameter: "..path)
+    else
+      info.type = "file"
+      local fileName = getFileName(path) or getFullFile(path)
+      local chars = #fileName + (extension and #extension+1 or 0)
+      info.directory = path:sub(1, #path-chars-1)
+    end
+    table.insert(outputDataDirs, info)
+  end
+else
+  outputDataDirs = nil
+end
+
+if outputDataDirs then
+  if #outputDataDirs == 1 then
+    outputDataDirs = outputDataDirs[1]
+    if #outputDirs > 1 then
+      assert(outputDataDirs.type == "directory", "As there are multuple defined output directories, you cannot have a file path as the single data output directory")
+    end
+  else
+    assert(#outputDataDirs == #outputDirs, "Mismtached number of output and data output directories given: "..#outputDirs.." Outputs, "..#outputDataDirs.." Data Outputs")
+  end
 end
 
 local padding = 1
@@ -278,11 +306,15 @@ for inputIndex, inputDir in ipairs(inputDirs) do
   local _, imageData = atlas:hardBake()
   assert(imageData, "Fatal error, atlas was baked before reaching this stage")
   
-  local output = type(outputDirs) == "table" and outputDirs[inputIndex] or outputDirs
+  local output = #outputDirs > 0 and outputDirs[inputIndex] or outputDirs
+  local dataOutput
+  if outputDataDirs then
+    dataOutput = #outputDataDirs > 0 and outputDataDirs[inputIndex] or outputDataDirs
+  end
   
   local atlasPath
   if output.type == "file" then
-    atlasPath = output.path..(output.addExtension and ".png" or "")
+    atlasPath = output.path
   else
     atlasPath = output.path.."/atlas"..(#inputDirs > 1 and tostring(inputIndex) or "")..".png"
   end
@@ -315,12 +347,20 @@ for inputIndex, inputDir in ipairs(inputDirs) do
     }
   end
   
-  local dataPath = output.path
-  if output.type == "file" then
-    dataPath = output.directory
+  local dataPath
+  if not dataOutput then
+    dataPath = output.path
+    if output.type == "file" then
+      dataPath = output.directory
+    end
+    dataPath = dataPath.."/data"..(#inputDirs > 1 and tostring(inputIndex) or "").."."..extension
+  else
+    if dataOutput.type == "file" then
+      dataPath = dataOutput.path
+    else
+      dataPath = dataOutput.path.."/data"..(#inputDirs > 1 and tostring(inputIndex) or "").."."..extension
+    end
   end
-  dataPath = dataPath.."/data"..(#inputDirs > 1 and tostring(inputIndex) or "").."."..extension
-  
   local success, errorMessage = nfs.write(dataPath, lustache:render(template, {
     quads = quads,
     meta = meta,
