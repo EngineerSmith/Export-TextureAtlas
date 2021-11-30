@@ -16,6 +16,8 @@ Must be one or equal number of output directories. Directories must end in `/` o
 
 `love . -input ./bin/in/ ./bin/in2/ -output ./bin/out/atlas1.png ./bin/out/atlas2.png`
 You can define the name of the atlas, if you do equal number of directories to output. 
+
+`love . -input ./bin/in/ -output ./assets/atlas/image.png -dataOutput ./assets/atlas/data.json -template ./bin/in/template.json -padding 1 -extrude 1 -removeFileExtension`
 # Arguments
 `love . <inputDir> <outputDir> [<...>]`
 ## inputDir or -input \<dir or file path> \<...>
@@ -31,9 +33,9 @@ Required argument. Directory must exist; containing all images to add to texture
 ## outputDir or -output \<dir or file path> \<...>
 Required argument. The directory doesn't need to exist, once ran it will overwrite files and (hopefully) output the files within as `atlas.png` and `data.<template extension>`. If the flag `-output` is supplied `<outputDir>` is not required. If the given path is to a file, then it will name the outputted texture atlas that file, whilst the data file will be called `data.<template extension>`, if mulitple input and output directories are given, it will then append a number to make it a unique file. E.g. `data1.lua`, `data2.lua`, `data3.png`. The same happens to atlas if only one output directory is defined, but `atlas` is appended in place of `data`. E.g. `atlas1.png`, `atlas2.png`, `atlas3.png`
 
-**Note**, file must end with an extension or it will be treated as a directory.
+**Note**, file must end with an extension, otherwise it will be treated as a directory.
 ### Example
-`love . <inputDir ./bin/out`
+`love . <inputDir> ./bin/out`
 
 `love . <inputDir> ./assets/textureAtlas/`
 
@@ -43,6 +45,16 @@ Required argument. The directory doesn't need to exist, once ran it will overwri
 
 `love . -input <dir1> <dir2> <dir3> -output ./bin/out/imageA ./bin/out/imageB.png ./bin/out/imageC.banana` -> `imageA/atlas1.png`+`imageA/data1.lua`, `imageB.png`+`data2.lua`, `imageC.banana`+`data3.lua`
 **Note**, that `image3.banana` will be encoded as a `png` file.
+## -dataOutput \<dir or file path> \<..>
+Optional. Where the data file is saved that is generated from the given template or the default template. If a directory is given, it will be called `data.<template extension>` (if there are multiple input directories then a number will be added as a prefix).
+
+**Note**, file must end with an extension, otherwise it will be treated as a directory.
+### Example
+`love . <inputDir> <outputDir> -dataOutput ./bin/quads.lua`
+
+`love . -input <dir1> <dir2> -output <dir3> <dir4> -dataOutput ./bin/quadData`
+
+`love . -input <dir1> <dir2> -output <dir3> -dataOutput <dir3>/dir1.lua <dir3>/dir2.lua`
 ## -padding \<num>
 Optional. Padding between images on the atlas, defaults to 1. Will throw a handled error if it cannot be converted to a number.
 
