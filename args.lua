@@ -42,7 +42,7 @@ end
 
 if cache then
   if last then
-    if type(processes[last]) ~= "table" then
+    if type(processed[last]) ~= "table" then
       processed[last] = {}
     end
     insert(processed[last], cache)
