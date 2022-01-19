@@ -4,5 +4,5 @@
   update = merge #
 [submodule "NFS"]
 	path = NFS
-	url = https://github.com/megagrump/nativefs
+	url = https://github.com/EngineerSmith/nativefs
   update = merge #
