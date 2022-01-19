@@ -26,6 +26,18 @@ love.conf = function(t)
 end
 
 love.run = function()
+  if love._version_major == "11" and jit then
+    -- Slime has confirmed that this will not work on all platforms in love12, and so it must be tested in the future
+    local ffi = require("ffi") 
+    ffi.cdef[[
+      typedef void SDL_Window;
+      SDL_Window* SDL_GL_GetCurrentWindow(void);
+      void SDL_HideWindow(SDL_Window * window);
+    ]]
+    local SDL2 = ffi.load("SDL2")
+    local window = SDL2.SDL_GL_GetCurrentWindow()
+    SDL2.SDL_HideWindow(window)
+  end
   return function()
     if love.event then
       love.event.pump()
