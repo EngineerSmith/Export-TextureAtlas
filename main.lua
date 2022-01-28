@@ -224,7 +224,7 @@ local loadImage = function(location)
   if not extension or not supportedExtensions[extension:lower()] then
     return
   end
-  local success, result = pcall(love.graphics.newImage, location)
+  local success, result = pcall(love.image.newImageData, location)
   assert(success, "Unable to load image: "..tostring(location)..", Reason:"..tostring(result))
   return result
 end
@@ -327,7 +327,7 @@ for inputIndex, inputDir in ipairs(inputDirs) do
   for id, lovequad in pairs(atlas.quads) do
     local quad = {}
     quad.id = id
-    quad.x, quad.y, quad.w, quad.h = lovequad:getViewport()
+    quad.x, quad.y, quad.w, quad.h = unpack(lovequad)
     table.insert(quads, quad)
   end
   quads[#quads].last = true
