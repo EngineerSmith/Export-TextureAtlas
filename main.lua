@@ -282,6 +282,22 @@ for inputIndex, inputDir in ipairs(inputDirs) do
     atlas = require("RTA").newDynamicSize(padding, extrude, spacing)
   end
   
+  if type(args["-maxSize"]) == "table" then
+    local width  = args["-maxSize"][1]
+    local height = args["-maxSize"][2]
+    if width then
+      width = tonumber(width)
+      assert(width, "Arg -maxSize's width could not be converted to type number")
+      assert(width > 1, "Arg -maxSize's width is less than 1, invalid size")
+    end
+    if height then
+      height = tonumber(height)
+      assert(height, "Arg -maxSize's height could not be converted to type number")
+      assert(height > 1, "Arg -maxSize's height is less than 1, invalid size")
+    end
+    atlas:setMaxSize(width, height)
+  end
+  
   if args["-pow2"] then
     atlas:setBakeAsPow2(true)
   end
@@ -327,7 +343,7 @@ for inputIndex, inputDir in ipairs(inputDirs) do
   for id, lovequad in pairs(atlas.quads) do
     local quad = {}
     quad.id = id
-    quad.x, quad.y, quad.w, quad.h = unpack(lovequad)
+    quad.x, quad.y, quad.w, quad.h = lovequad[1], lovequad[2], lovequad[3], lovequad[4]
     table.insert(quads, quad)
   end
   quads[#quads].last = true

@@ -1,7 +1,10 @@
+
 # Export-TextureAtlas (ETA)
 Extends the [Runtime-TextureAtlas library](https://github.com/EngineerSmith/Runtime-TextureAtlas) and allows it to be exported as a file. This tool requires [Love2d](https://love2d.org/) to work, but the resulting files are not tied to Love2D. Use a custom template to change the format of the quads file to how you want it. See `-template <filepath>` argument on how to create your own export template, or just use the default one provided.
 
 This tool can be fused similarly to any other love project. Follow these [instructions](https://love2d.org/wiki/Game_Distribution) for your platform. Note, all arguments will work the same, but `love . <args>`/`love <ETA dir> <args>` will become `fused.exe <args>`, etc.
+
+**Note, the default maxSize of the atlas is 16,384.** You can increase or decrease  this using the argument `-maxSize <width> <height>`
 ## Clone
 `git clone https://github.com/EngineerSmith/Export-TextureAtlas --recurse-submodules`
 ## Example use
@@ -89,6 +92,12 @@ Optional. Uses a fixed size atlas from [Runtime-TextureAtlas](https://github.com
 Optional. This argument will round the width and height of the atlas to the nearest power of 2 value. Note, the packing algorithms are not designed to pack to the nearest power of two, and so you may be left with additional empty space. PNG encoding used shouldn't add too much overhead to this from testing.
 ### Example
 `love . <inputDir> <outputDir> -pow2`
+## -maxSize \<width> [\<height>]
+Set the max size the atlas is allowed to reach. Must be greater than 0. If height is excluded, it will be set to the default max size of 16,384
+### Example
+`love . <inputDir> <outputDir> -maxSize 100 100`
+
+`love . <inputDir> <outputDir> -maxSize 1000`
 ## -ignore \<directory or file path> \<...>
 Optional. Skip a directory or a file path from being added or searched through to the texture atlas. Can use wild cards.
 ### Example
